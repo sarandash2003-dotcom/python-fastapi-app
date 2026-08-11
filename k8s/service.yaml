@@ -1,13 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: flask-service
+  name: fastapi-service
   namespace: default
+
 spec:
-  type: ClusterIP
+  type: NodePort
+
   selector:
-    app: flask-app
+    app: project-fastapi
+
   ports:
-  - port: 80
-    targetPort: 5000
-    protocol: TCP
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+      nodePort: 30081
