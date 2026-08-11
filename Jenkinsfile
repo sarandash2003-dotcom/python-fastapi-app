@@ -52,23 +52,34 @@ pipeline {
         }
       }
     }
+stage('Update Deployment File') {
+    steps {
+        withCredentials([
+            usernamePassword(
+                credentialsId: 'github',
+                usernameVariable: 'GITHUB_USERNAME',
+                passwordVariable: 'GITHUB_TOKEN'
+            )
+        ]) {
+            sh '''
+                git config user.email "sarandash2003@gmail.com"
+                git config user.name "${GIT_USER_NAME}"
 
-    stage('Update Deployment File') {
-      steps {
-        withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-          sh '''
-            git config user.email "sarandash2003@gmail.com"
-            git config user.name "${GIT_USER_NAME}"
+                sed -i "s|image: .*|image: ${DOCKER_IMAGE}:${BUILD_NUMBER}|g" k8s/deployment.yaml
 
-            sed -i "s|image: .*|image: ${DOCKER_IMAGE}:${BUILD_NUMBER}|g" k8s/deployment.yaml
+                git add k8s/deployment.yaml
 
-            git add k8s/deployment.yaml
-            git commit -m "Update flask app image tag to ${BUILD_NUMBER} [skip ci]" || echo "No changes to commit"
-            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
-          '''
+                git commit \
+                  -m "Update FastAPI app image tag to ${BUILD_NUMBER} [skip ci]" \
+                  || echo "No changes to commit"
+
+                git push \
+                  https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git \
+                  HEAD:main
+            '''
         }
-      }
     }
+}
   }
 
   post {
