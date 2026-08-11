@@ -54,25 +54,24 @@ pipeline {
     }
 
     stage('Update Deployment File') {
-      steps {
-        withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-          sh '''
-            git config user.email "sarandash2003@gmail.com"
-            git config user.name "${GIT_USER_NAME}"
-
-            sed -i "s|image: .*|image: ${DOCKER_IMAGE}:${BUILD_NUMBER}|g" k8s/deployment.yaml
-
-            git add k8s/deployment.yaml
-            git commit -m "Update flask app image tag to ${BUILD_NUMBER} [skip ci]" || echo "No changes to commit"
-            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
-          '''
+     
+    steps {
+        withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+            sh """
+                git config user.email "sarandash2003@gmail.com"
+                git config user.name "sarandash2003-dotcom"
+                sed -i 's|image: .*|image: dassaran504/static-website:2|g' k8s/deployment.yaml
+                git add k8s/deployment.yaml
+                git commit -m "Update flask app image tag to 2 [skip ci]"
+                
+                # Use the credentials dynamically in the URL
+                git push https://${GIT_USER}:${GIT_TOKEN}@://github.com HEAD:main
+            """
         }
-      }
     }
-  }
-
-  post {
-    always {
+}
+       
+ 
       cleanWs()
     }
   }
