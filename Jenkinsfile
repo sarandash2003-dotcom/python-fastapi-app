@@ -17,7 +17,7 @@ pipeline {
         stage('Checkout') {
             steps {
               sh 'echo "passed"' 
-                git branch: 'main',
+             //   git branch: 'main',
                   //url: 'https://github.com/Doom710/python-fastapi-app'
             }
         }
