@@ -86,8 +86,7 @@ pipeline {
                           || echo "No changes to commit"
 
                         git push \
-                          https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} \
-                          HEAD:main
+                          https://${GIT_USER_NAME}:${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git \ HEAD:main
                     '''
                 }
             }
