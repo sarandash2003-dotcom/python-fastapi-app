@@ -70,8 +70,17 @@ pipeline {
         }
     }
 }
-       
- 
-      cleanWs()
+       stages {
+    stage('Cleanup') {
+        steps {
+            cleanWs() //  Fixed! Inside stage -> steps.
+        }
+    }
+    stage('Build') {
+        steps {
+            // Your build commands here
+        }
+    }
+}
     }
   }
